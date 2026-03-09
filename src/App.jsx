@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSignalR } from './hooks/useSignalR'
 import StatCards from './components/StatCards'
 import LiveFeed from './components/LiveFeed'
@@ -15,6 +15,30 @@ export default function App() {
   const [connected, setConnected] = useState(false)
   const [activity, setActivity] = useState([])
   const [running, setRunning] = useState(false)
+  const [waking, setWaking] = useState(true)
+  const [wakeSeconds, setWakeSeconds] = useState(0)
+
+  useEffect(() => {
+    let elapsed = 0
+    const timer = setInterval(() => {
+      elapsed += 1
+      setWakeSeconds(elapsed)
+    }, 1000)
+
+    const poll = async () => {
+      for (let i = 0; i < 40; i++) {
+        try {
+          const res = await fetch(`${BACKEND}/health`)
+          if (res.ok) { setWaking(false); break }
+        } catch {}
+        await new Promise(r => setTimeout(r, 2000))
+      }
+      setWaking(false) // give up after ~80s and show dashboard anyway
+    }
+
+    poll().then(() => clearInterval(timer))
+    return () => clearInterval(timer)
+  }, [])
 
   useSignalR({
     Connected: () => setConnected(true),
@@ -34,6 +58,25 @@ export default function App() {
       setAlerts(prev => [alert, ...prev].slice(0, 5))
     }
   })
+
+  if (waking) {
+    return (
+      <div className="min-h-screen bg-[#0f1117] text-white flex flex-col items-center justify-center gap-6 px-6">
+        <div className="w-12 h-12 rounded-full border-4 border-blue-500/30 border-t-blue-400 animate-spin" />
+        <div className="text-center">
+          <p className="text-white font-semibold text-lg mb-2">Starting up the server...</p>
+          <p className="text-gray-400 text-sm max-w-sm leading-relaxed">
+            The backend runs on a free server that sleeps when idle.
+            It's waking up now — this takes about 30 seconds.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-600">
+          <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
+          {wakeSeconds}s elapsed
+        </div>
+      </div>
+    )
+  }
 
   async function toggleProducer() {
     const endpoint = running ? '/producer/stop' : '/producer/start'
