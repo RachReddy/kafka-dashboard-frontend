@@ -8,7 +8,7 @@ A live payment monitoring dashboard powered by Apache Kafka, ASP.NET Core, Signa
 
 ## What It Does
 
-Simulates a real-time payment system — the same architecture used by companies like **Uber, Netflix, and LinkedIn** to process millions of events per second.
+Simulates a real-time payment system - the same architecture used by companies like **Uber, Netflix, and LinkedIn** to process millions of events per second.
 
 Every 2 seconds, a payment transaction is generated and flows through the entire pipeline:
 
@@ -48,7 +48,7 @@ React Frontend  ←──── SignalR (WebSocket) ────←  ASP.NET Cor
                                               "transactions"
 ```
 
-The key insight: **the producer and consumers are completely decoupled**. The producer doesn't know or care who is consuming. New consumers can be added at any time without touching the producer — this is why Kafka scales so well in production.
+The key insight: **the producer and consumers are completely decoupled**. The producer doesn't know or care who is consuming. New consumers can be added at any time without touching the producer - this is why Kafka scales so well in production.
 
 ---
 
@@ -98,10 +98,10 @@ Open `http://localhost:5173` and click **"Click to start the board"**.
 
 ## Why Kafka?
 
-Most APIs handle one request at a time — request in, response out. Kafka flips this model. Events are published to a topic and any number of consumers can independently read them, at their own pace, without blocking each other.
+Most APIs handle one request at a time - request in, response out. Kafka flips this model. Events are published to a topic and any number of consumers can independently read them, at their own pace, without blocking each other.
 
 This project demonstrates:
-- **Consumer groups** — three separate services (feed, stats, anomaly) each get every event
-- **Offset management** — Kafka tracks where each consumer left off; no event is lost
-- **Decoupled architecture** — producer and consumers have no direct dependency on each other
-- **Real-time delivery** — events reach the browser within milliseconds of being published
+- **Consumer groups** - three separate services (feed, stats, anomaly) each get every event
+- **Offset management** - Kafka tracks where each consumer left off; no event is lost
+- **Decoupled architecture** - producer and consumers have no direct dependency on each other
+- **Real-time delivery** - events reach the browser within milliseconds of being published
